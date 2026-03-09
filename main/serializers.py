@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Organization, CustomUser
+from .models import Organization, CustomUser, Transaction, Wallet
 
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,3 +28,17 @@ class CustomUserSerializer(serializers.ModelSerializer):
             user.save()
             
         return user
+    
+class WalletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wallet
+        fields = ['id', 'organization', 'balance', 'created_at']
+
+        read_only_fields = ['id','balance', 'created_at']    
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ['id', 'wallet', 'maker', 'checker', 'amount', 'state', 'created_at'] 
+
+        read_only_fields = ['id', 'maker', 'state', 'created_at']       

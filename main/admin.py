@@ -20,12 +20,11 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Wallet) 
 class WalletAdmin(admin.ModelAdmin):
-    list_display = ('id','customUser','balance','created_at')
-    search_fields = ('customUser',)
+    list_display = ('id','organization','balance','created_at')
+    search_fields = ('organization',)
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('id','customUser','wallet','amount','state','created_at')
+    list_display = ('id','maker','wallet','checker','amount','state','created_at')
     list_filter = ('state',)
-    search_fields = ('customUser',)
-           
+    search_fields = ('maker', 'checker')
