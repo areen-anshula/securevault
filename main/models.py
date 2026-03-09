@@ -2,8 +2,6 @@ import uuid
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# Create your models here.
-
 class Organization(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=225, unique=True)
@@ -22,10 +20,10 @@ class CustomUser(AbstractUser):
         ADMIN = 'ADMIN', 'Admin'
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, default="")
     email = models.EmailField(unique=True)
 
-    Organization = models.ForeignKey(
+    organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
         null=True,
@@ -47,24 +45,21 @@ class CustomUser(AbstractUser):
 
 class Wallet(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    CustomUser_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    organization = models.OneToOneField('Organization', on_delete=models.CASCADE, related_name='wallet', default=None)
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Transaction(models.Model):
-
     class Status(models.TextChoices):
         PENDING = 'PENDING', 'Pending'
         APPROVED = 'APPROVED', 'Approved'
         REJECTED = 'REJECTED', 'Rejected'
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    wallet_id = models.ForeignKey(Wallet, on_delete=models.CASCADE)
-    CustomUser_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    wallet = models.ForeignKey(Wallet, on_delete=models.PROTECT, related_name='transactions')
+    maker = models.ForeignKey('CustomUser', on_delete=models.PROTECT, related_name='made_transactions', default=None)
+    checker = models.ForeignKey('CustomUser', on_delete=models.PROTECT, related_name='approved_transactions', null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)    
-    state = models.CharField(
-        max_length=10,
-        choices=Status.choices,
-        default=Status.PENDING
-    )
+    state = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)

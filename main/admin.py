@@ -10,22 +10,21 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    list_display = ('email','username','Organization','role','is_staff')
+    list_display = ('email','username','organization','role','is_staff')
     list_filter = ('role','is_staff','is_superuser','is_active')
     search_fields = ('email','username')
 
     fieldsets = UserAdmin.fieldsets + (
-        ('SecureVault Roles & Tenancy', {'fields':('Organization', 'role')}),
+        ('SecureVault Roles & Tenancy', {'fields':('organization', 'role')}),
     )
 
 @admin.register(Wallet) 
 class WalletAdmin(admin.ModelAdmin):
-    list_display = ('CustomUser_id','balance','created_at')
-    search_fields = ('CustomUser_id__email',)
+    list_display = ('id','organization','balance','created_at')
+    search_fields = ('organization',)
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('id','customuser','amount','status','created_at')
-    list_filter = ('status',)
-    search_fields = ('customuser__email',)
-           
+    list_display = ('id','maker','wallet','checker','amount','state','created_at')
+    list_filter = ('state',)
+    search_fields = ('maker', 'checker')
