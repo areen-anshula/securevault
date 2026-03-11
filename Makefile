@@ -23,8 +23,8 @@ makemigrations:
 	$(MANAGE) makemigrations
 
 update:
-    $(MANAGE) migrate
-    $(MANAGE) makemigrations
+	$(MANAGE) makemigrations
+	$(MANAGE) migrate
 
 superuser:
 	$(MANAGE) createsuperuser
